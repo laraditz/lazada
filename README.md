@@ -65,6 +65,7 @@ Below are all methods available under this package. Parameters for all method ca
 | order()      | list()                  | Get an order list from specified date range.                                        |
 |              | get()                   | Get single order detail by order ID.                                                |
 |              | items()                 | Get the item information of an order.                                               |
+|              | document()              | Retrieve order-related documents, including invoices and shipping labels.           |
 | finance()    | payoutStatus()          | Get your transaction statements created after the provided date.                    |
 |              | accountTransactions()   | Query Account Transactions.                                                         |
 |              | logisticsFeeDetail()    | Query logistics fee details from slb.                                               |
