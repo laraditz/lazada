@@ -37,6 +37,7 @@ return [
             'get' => '/order/get',
             'list' => '/orders/get',
             'items' => '/order/items/get',
+            'document' => '/order/document/get',
         ],
         'finance' => [
             'payout_status' => '/finance/payout/status/get',
