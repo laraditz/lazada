@@ -1,13 +1,13 @@
 <?php
 
-namespace Laraditz\Lazada;
+namespace Laraditz\Lazada\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Laraditz\Lazada\Skeleton\SkeletonClass
  */
-class LazadaFacade extends Facade
+class Lazada extends Facade
 {
     /**
      * Get the registered name of the component.
