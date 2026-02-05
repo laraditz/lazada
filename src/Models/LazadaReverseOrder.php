@@ -14,6 +14,11 @@ class LazadaReverseOrder extends Model
 
     protected $fillable = ['id', 'order_id', 'seller_id', 'buyer_id', 'status'];
 
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(LazadaOrder::class);
+    }
+
     public function seller(): BelongsTo
     {
         return $this->belongsTo(LazadaSeller::class);
