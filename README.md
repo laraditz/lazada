@@ -37,6 +37,12 @@ LAZADA_SELLER_ID=MYXXXXXXXX
 php artisan vendor:publish --provider="Laraditz\Lazada\LazadaServiceProvider" --tag="config"
 ```
 
+Publish the migration file via this command:
+
+```bash
+php artisan vendor:publish --provider="Laraditz\Lazada\LazadaServiceProvider" --tag="migrations"
+```
+
 Run the migration command to create the necessary database table.
 
 ```bash
