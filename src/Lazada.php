@@ -5,21 +5,31 @@ namespace Laraditz\Lazada;
 use BadMethodCallException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Laraditz\Lazada\Models\LazadaSeller;
 use LogicException;
 
 class Lazada
 {
-    private $services = ['auth', 'seller', 'order', 'helper'];
+    private $services = ['auth', 'seller', 'order', 'helper', 'product'];
 
     public function __construct(
-        private string $region,
-        private string $app_key,
-        private string $app_secret,
-        private ?string $app_callback_url,
+        private ?string $region = null,
+        private ?string $app_key = null,
+        private ?string $app_secret = null,
+        private ?string $app_callback_url = null,
         private ?string $sign_method = 'sha256',
         private ?bool $sandbox_mode = false,
         private ?string $seller_id = null,
     ) {
+        $this->setAppKey($this->app_key ?? config('lazada.app_key'));
+        $this->setAppSecret($this->app_secret ?? config('lazada.app_secret'));
+        $this->setSellerId($this->seller_id ?? config('lazada.seller_id'));
+        $this->setAppCallbackUrl($this->app_callback_url ?? config('lazada.app_callback_url'));
+    }
+
+    public static function make(...$args): static
+    {
+        return new static(...$args);
     }
 
     public function __call($method, $arguments)
@@ -94,9 +104,19 @@ class Lazada
         return $this->region;
     }
 
+    public function setRegion(string|int $region): void
+    {
+        $this->region = $region;
+    }
+
     public function getAppKey(): string
     {
         return $this->app_key;
+    }
+
+    public function setAppKey(string|int $appKey): void
+    {
+        $this->app_key = $appKey;
     }
 
     public function getAppSecret(): string
@@ -104,9 +124,19 @@ class Lazada
         return $this->app_secret;
     }
 
+    public function setAppSecret(string|int $appSecret): void
+    {
+        $this->app_secret = $appSecret;
+    }
+
     public function getAppCallbackUrl(): string
     {
         return $this->app_callback_url ?? route('lazada.seller.authorized');
+    }
+
+    public function setAppCallbackUrl(string|int $appCallbackUrl): void
+    {
+        $this->app_callback_url = $appCallbackUrl;
     }
 
     public function getSignMethod(): string
