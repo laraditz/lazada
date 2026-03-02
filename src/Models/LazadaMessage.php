@@ -10,7 +10,7 @@ class LazadaMessage extends Model
 {
     use HasFactory, HasUlids;
 
-    protected $fillable = ['action', 'url', 'request_id', 'request', 'response', 'error'];
+    protected $fillable = ['action', 'url', 'request_id', 'request', 'response', 'error', 'seller_id'];
 
     protected $casts = [
         'request' => 'json',

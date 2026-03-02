@@ -48,6 +48,7 @@ return [
         'product' => [
             'get' => '/products/get',
             'item' => '/product/item/get',
+            'update_sellable_quantity' => 'POST /product/stock/sellable/update'
         ],
     ],
     'middleware' => ['api'],
