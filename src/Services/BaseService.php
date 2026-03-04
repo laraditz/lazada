@@ -158,7 +158,7 @@ class BaseService
         ];
 
         if (!($this instanceof \Laraditz\Lazada\Services\AuthService)) {
-            $seller = LazadaSeller::findOrFail($this->lazada->getSellerId());
+            $seller = LazadaSeller::where('short_code', $this->lazada->getSellerId())->firstOrFail();
 
             $params['access_token'] = $seller->accessToken?->access_token;
         }
