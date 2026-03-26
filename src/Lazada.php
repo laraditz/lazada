@@ -23,7 +23,7 @@ class Lazada
         $this->setAppKey($this->app_key ?? config('lazada.app_key'));
         $this->setAppSecret($this->app_secret ?? config('lazada.app_secret'));
         $this->setSellerId($this->seller_id ?? config('lazada.seller_id'));
-        $this->setAppCallbackUrl($this->app_callback_url ?? config('lazada.app_callback_url'));
+        $this->setAppCallbackUrl($this->app_callback_url ?? config('lazada.app_callback_url') ?? route('lazada.seller.authorized'));
     }
 
     public static function make(...$args): static
@@ -33,8 +33,8 @@ class Lazada
 
     public function __call($method, $arguments)
     {
-        throw_if(! $this->getAppKey(), LogicException::class, __('Missing App Key.'));
-        throw_if(! $this->getAppSecret(), LogicException::class, __('Missing App Secret.'));
+        throw_if(!$this->getAppKey(), LogicException::class, __('Missing App Key.'));
+        throw_if(!$this->getAppSecret(), LogicException::class, __('Missing App Secret.'));
 
         if (count($arguments) > 0) {
             $argumentCollection = collect($arguments);
@@ -51,14 +51,14 @@ class Lazada
             }
         }
 
-        throw_if(! ($this->getSellerId() || in_array($method, ['auth'])), LogicException::class, __('Missing Seller ID.'));
+        throw_if(!($this->getSellerId() || in_array($method, ['auth'])), LogicException::class, __('Missing Seller ID.'));
 
         $property_name = strtolower(Str::snake($method));
 
         if (in_array($property_name, $this->services)) {
             $reformat_property_name = ucfirst(Str::camel($method));
 
-            $service_name = 'Laraditz\\Lazada\\Services\\'.$reformat_property_name.'Service';
+            $service_name = 'Laraditz\\Lazada\\Services\\' . $reformat_property_name . 'Service';
 
             return new $service_name(lazada: app('lazada'));
         } else {
@@ -79,7 +79,7 @@ class Lazada
 
         $signature = urldecode(Arr::query($payload));
 
-        $signature = $route.Str::remove(['=', '&'], $signature);
+        $signature = $route . Str::remove(['=', '&'], $signature);
 
         $signature = hash_hmac($sign_method, $signature, $app_secret);
 
@@ -91,7 +91,7 @@ class Lazada
         $app_key = $this->getAppKey();
         $app_secret = $this->getAppSecret();
         $sign_method = $this->getSignMethod();
-        $base = $app_key.$body;
+        $base = $app_key . $body;
 
         $signature = hash_hmac($sign_method, $base, $app_secret);
 
@@ -130,7 +130,7 @@ class Lazada
 
     public function getAppCallbackUrl(): string
     {
-        return $this->app_callback_url ?? route('lazada.seller.authorized');
+        return $this->app_callback_url;
     }
 
     public function setAppCallbackUrl(string|int $appCallbackUrl): void
