@@ -99,6 +99,7 @@ class BaseService
             'action' => $this->serviceName . '::' . $this->methodName,
             'url' => $url,
             'request' => $payload,
+            'seller_id' => $this->lazada->getSellerId()
         ]);
 
         $response = $response->$method($url, $payload);
