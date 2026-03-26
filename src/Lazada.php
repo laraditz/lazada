@@ -5,11 +5,14 @@ namespace Laraditz\Lazada;
 use BadMethodCallException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Laraditz\Lazada\Models\LazadaSeller;
 use LogicException;
 
 class Lazada
 {
     private $services = ['auth', 'seller', 'order', 'helper', 'finance', 'product'];
+
+    public ?LazadaSeller $seller = null;
 
     public function __construct(
         private ?string $region = null,
@@ -18,17 +21,59 @@ class Lazada
         private ?string $app_callback_url = null,
         private ?string $sign_method = 'sha256',
         private ?bool $sandbox_mode = false,
-        private ?string $seller_id = null,
+        private ?string $seller_short_code = null,
     ) {
         $this->setAppKey($this->app_key ?? config('lazada.app_key'));
         $this->setAppSecret($this->app_secret ?? config('lazada.app_secret'));
-        $this->setSellerId($this->seller_id ?? config('lazada.seller_id'));
+        $this->setSellerShortCode($this->seller_short_code ?? config('lazada.seller_short_code'));
         $this->setAppCallbackUrl($this->app_callback_url ?? config('lazada.app_callback_url') ?? route('lazada.seller.authorized'));
     }
 
-    public static function make(...$args): static
+    public static function make(
+        ?string $seller_id = null,
+        ?string $region = null,
+        ?string $app_key = null,
+        ?string $app_secret = null,
+        ?string $app_callback_url = null,
+        ?string $sign_method = null,
+        ?bool $sandbox_mode = null,
+    ): static {
+        return new static(
+            region: $region,
+            app_key: $app_key,
+            app_secret: $app_secret,
+            app_callback_url: $app_callback_url,
+            sign_method: $sign_method,
+            sandbox_mode: $sandbox_mode,
+            seller_short_code: $seller_id,
+        );
+    }
+
+    public function checkSeller(): void
     {
-        return new static(...$args);
+        if ($this->seller !== null) {
+            return; // idempotent — already resolved
+        }
+
+        if (empty($this->seller_short_code)) {
+            throw new LogicException(__('Missing Seller ID.'));
+        }
+
+        $seller = null;
+
+        if (is_numeric($this->seller_short_code)) {
+            $seller = LazadaSeller::where('id', $this->seller_short_code)->first();
+        }
+
+        if ($seller === null) {
+            $seller = LazadaSeller::where('short_code', $this->seller_short_code)->first();
+        }
+
+        if ($seller === null) {
+            throw new LogicException(__('Invalid Seller ID.'));
+        }
+
+        $this->seller = $seller;
     }
 
     public function __call($method, $arguments)
@@ -42,16 +87,18 @@ class Lazada
             try {
                 $argumentCollection->keys()->ensure('string');
             } catch (\Throwable $th) {
-                // throw $th;
                 throw new LogicException(__('Please pass a named arguments in :method method.', ['method' => $method]));
             }
 
             if ($seller_id = data_get($arguments, 'seller_id')) {
-                $this->setSellerId($seller_id);
+                $this->setSellerShortCode($seller_id);
+                $this->seller = null; // reset cache to force re-resolution
             }
         }
 
-        throw_if(!($this->getSellerId() || in_array($method, ['auth'])), LogicException::class, __('Missing Seller ID.'));
+        if (!in_array($method, ['auth'])) {
+            $this->checkSeller();
+        }
 
         $property_name = strtolower(Str::snake($method));
 
@@ -60,7 +107,7 @@ class Lazada
 
             $service_name = 'Laraditz\\Lazada\\Services\\' . $reformat_property_name . 'Service';
 
-            return new $service_name(lazada: app('lazada'));
+            return new $service_name(lazada: $this);
         } else {
             throw new BadMethodCallException(sprintf(
                 'Method %s::%s does not exist.',
@@ -98,7 +145,7 @@ class Lazada
         return strtoupper($signature);
     }
 
-    public function getRegion(): string
+    public function getRegion(): ?string
     {
         return $this->region;
     }
@@ -108,7 +155,7 @@ class Lazada
         $this->region = $region;
     }
 
-    public function getAppKey(): string
+    public function getAppKey(): ?string
     {
         return $this->app_key;
     }
@@ -118,7 +165,7 @@ class Lazada
         $this->app_key = $appKey;
     }
 
-    public function getAppSecret(): string
+    public function getAppSecret(): ?string
     {
         return $this->app_secret;
     }
@@ -128,7 +175,7 @@ class Lazada
         $this->app_secret = $appSecret;
     }
 
-    public function getAppCallbackUrl(): string
+    public function getAppCallbackUrl(): ?string
     {
         return $this->app_callback_url;
     }
@@ -148,13 +195,13 @@ class Lazada
         return $this->sandbox_mode;
     }
 
-    public function setSellerId(string $seller_id): void
+    public function setSellerShortCode(?string $sellerShortCode): void
     {
-        $this->seller_id = $seller_id;
+        $this->seller_short_code = $sellerShortCode;
     }
 
-    public function getSellerId(): ?string
+    public function getSellerShortCode(): ?string
     {
-        return $this->seller_id;
+        return $this->seller_short_code;
     }
 }

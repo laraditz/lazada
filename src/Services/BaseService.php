@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use Laraditz\Lazada\Exceptions\LazadaAPIError;
 use Laraditz\Lazada\Lazada;
 use Laraditz\Lazada\Models\LazadaMessage;
-use Laraditz\Lazada\Models\LazadaSeller;
 use LogicException;
 
 class BaseService
@@ -18,10 +17,6 @@ class BaseService
     public string $methodName;
 
     public string $serviceName;
-
-    public string $sellerId;
-
-    public ?LazadaSeller $seller = null;
 
     public function __construct(
         public Lazada $lazada,
@@ -101,7 +96,7 @@ class BaseService
             'action' => $this->serviceName . '::' . $this->methodName,
             'url' => $url,
             'request' => $payload,
-            'seller_id' => $this->seller?->id
+            'seller_id' => $this->lazada->seller?->id
         ]);
 
         $response = $response->$method($url, $payload);
@@ -160,9 +155,7 @@ class BaseService
         ];
 
         if (!($this instanceof \Laraditz\Lazada\Services\AuthService)) {
-            $this->seller = LazadaSeller::where('short_code', $this->lazada->getSellerId())->firstOrFail();
-
-            $params['access_token'] = $this->seller?->accessToken?->access_token;
+            $params['access_token'] = $this->lazada->seller?->accessToken?->access_token;
         }
 
         return $params;
@@ -261,20 +254,4 @@ class BaseService
         return $this->queryString;
     }
 
-    public function sellerId(string $sellerId): self
-    {
-        $this->setSellerId($sellerId);
-
-        return $this;
-    }
-
-    protected function setSellerId(string $sellerId): void
-    {
-        $this->sellerId = $sellerId;
-    }
-
-    protected function getSellerId(): string
-    {
-        return $this->sellerId;
-    }
 }
