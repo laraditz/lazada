@@ -8,7 +8,7 @@ use Laraditz\Lazada\Services\SellerService;
 
 class SellerServiceTest extends TestCase
 {
-    private static $latestResponse;
+    public static $latestResponse;
 
     public function test_info_returns_pre_resolved_seller(): void
     {
