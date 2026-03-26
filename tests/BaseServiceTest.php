@@ -12,7 +12,7 @@ use Laraditz\Lazada\Services\OrderService;
 
 class BaseServiceTest extends TestCase
 {
-    private static $latestResponse;
+    public static $latestResponse;
 
     public function test_get_common_parameters_reads_access_token_from_lazada_seller(): void
     {

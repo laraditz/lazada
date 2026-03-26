@@ -8,7 +8,7 @@ use LogicException;
 
 class LazadaTest extends TestCase
 {
-    private static $latestResponse;
+    public static $latestResponse;
 
     // --- checkSeller() resolution ---
 
