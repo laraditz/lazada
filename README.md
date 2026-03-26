@@ -27,7 +27,7 @@ Configure your variables in your `.env` (recommended) or you can publish the con
 ```
 LAZADA_APP_KEY=<your_lazada_app_key>
 LAZADA_APP_SECRET=<your_lazada_app_secret>
-LAZADA_SELLER_ID=MYXXXXXXXX
+LAZADA_SELLER_SHORT_CODE=MYXXXXXXXX # also called as Seller ID in the console
 ```
 
 (Optional) You can publish the config file via this command:
@@ -59,22 +59,26 @@ https://your-app-url.com/lazada/seller/authorized
 
 Below are all methods available under this package. Parameters for all method calls will follow exactly as in [Lazada Open Platform Documentation](https://open.lazada.com/apps/doc/api).
 
-| Service name | Method name             | Description                                                                         |
-| ------------ | ----------------------- | ----------------------------------------------------------------------------------- |
-| auth()       | authorizationUrl()      | Get the authorization URL for seller. Seller needs to login and authorized the app. |
-|              | accessToken()           | Generate access token for API call.                                                 |
-|              | refreshToken()          | Refresh access token before it expired.                                             |
-|              | accessTokenWithOpenId() | Generate access token with openId for API call.                                     |
-| seller()     | get()                   | Get seller information by current seller ID.                                        |
-|              | pickUpStoreList()       | Return the list of pick up store infomation for requested Seller.                   |
-| order()      | list()                  | Get an order list from specified date range.                                        |
-|              | get()                   | Get single order detail by order ID.                                                |
-|              | items()                 | Get the item information of an order.                                               |
-|              | document()              | Retrieve order-related documents, including invoices and shipping labels.           |
-| finance()    | payoutStatus()          | Get your transaction statements created after the provided date.                    |
-|              | accountTransactions()   | Query Account Transactions.                                                         |
-|              | logisticsFeeDetail()    | Query logistics fee details from slb.                                               |
-|              | transactionDetail()     | Query seller transaction details within specific date range.                        |
+| Service name | Method name              | Description                                                                         |
+| ------------ | ------------------------ | ----------------------------------------------------------------------------------- |
+| auth()       | authorizationUrl()       | Get the authorization URL for seller. Seller needs to login and authorized the app. |
+|              | accessToken()            | Generate access token for API call.                                                 |
+|              | refreshToken()           | Refresh access token before it expired.                                             |
+|              | accessTokenWithOpenId()  | Generate access token with openId for API call.                                     |
+| seller()     | get()                    | Get seller information by current seller ID.                                        |
+|              | info()                   | Return the resolved seller model for the current context.                           |
+|              | pickUpStoreList()        | Return the list of pick up store information for requested Seller.                  |
+| order()      | list()                   | Get an order list from specified date range.                                        |
+|              | get()                    | Get single order detail by order ID.                                                |
+|              | items()                  | Get the item information of an order.                                               |
+|              | document()               | Retrieve order-related documents, including invoices and shipping labels.           |
+| finance()    | payoutStatus()           | Get your transaction statements created after the provided date.                    |
+|              | accountTransactions()    | Query Account Transactions.                                                         |
+|              | logisticsFeeDetail()     | Query logistics fee details from slb.                                               |
+|              | transactionDetail()      | Query seller transaction details within specific date range.                        |
+| product()    | get()                    | Get product list for the seller.                                                    |
+|              | item()                   | Get a single product item by item ID.                                               |
+|              | updateSellableQuantity() | Update sellable stock quantity for a SKU.                                           |
 
 ## Usage
 
@@ -85,7 +89,22 @@ app('lazada')->auth()->authorizationUrl(); // give URL to seller to authorize ap
 app('lazada')->order()->get(order_id: '16090'); // get specific order
 ```
 
-or you can use facade
+### Multi-Seller Support
+
+To target a specific seller at runtime, use `Lazada::make()` with the seller's short code:
+
+```php
+// Instantiate for a specific seller
+$lazada = Lazada::make(seller_id: 'MYXXXXXXXX'); // you may also pass the numeric Seller ID here
+$lazada->order()->list(created_after: '2023-11-17T00:00:00+08:00');
+
+// Or pass seller_id on any service call to switch sellers dynamically
+Lazada::order(seller_id: 'MYXXXXXXXX')->list(created_after: '2023-11-17T00:00:00+08:00');
+```
+
+If `LAZADA_SELLER_SHORT_CODE` is set in `.env`, it is used as the default seller for all calls.
+
+### Facade
 
 ```php
 use Lazada;
