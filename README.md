@@ -1,9 +1,8 @@
-![Laravel Lazada](./Banner.png)
-
 # Laravel Lazada
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/laraditz/lazada.svg?style=flat-square)](https://packagist.org/packages/laraditz/lazada)
 [![Total Downloads](https://img.shields.io/packagist/dt/laraditz/lazada.svg?style=flat-square)](https://packagist.org/packages/laraditz/lazada)
+[![License](https://img.shields.io/packagist/l/laraditz/lazada?style=flat-square)](./LICENSE.md)
 ![GitHub Actions](https://github.com/laraditz/lazada/actions/workflows/main.yml/badge.svg)
 
 Laravel package for interacting with Lazada API.

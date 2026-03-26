@@ -3,7 +3,8 @@
   "description": "Laravel package for interacting with Lazada API.",
   "keywords": [
     "laraditz",
-    "lazada"
+    "lazada",
+    "laravel"
   ],
   "homepage": "https://github.com/laraditz/lazada",
   "license": "MIT",
