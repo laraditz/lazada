@@ -12,13 +12,15 @@ use Laraditz\Lazada\Services\OrderService;
 
 class BaseServiceTest extends TestCase
 {
+    private static $latestResponse;
+
     public function test_get_common_parameters_reads_access_token_from_lazada_seller(): void
     {
         $seller = LazadaSeller::factory()->create(['short_code' => 'TESTSHOP']);
         LazadaAccessToken::factory()->create([
             'subjectable_type' => LazadaSeller::class,
-            'subjectable_id'   => $seller->id,
-            'access_token'     => 'tok_abc123',
+            'subjectable_id' => $seller->id,
+            'access_token' => 'tok_abc123',
         ]);
 
         $lazada = new Lazada(seller_short_code: 'TESTSHOP');
@@ -37,8 +39,8 @@ class BaseServiceTest extends TestCase
         $seller = LazadaSeller::factory()->create(['short_code' => 'TESTSHOP']);
         LazadaAccessToken::factory()->create([
             'subjectable_type' => LazadaSeller::class,
-            'subjectable_id'   => $seller->id,
-            'access_token'     => 'tok_abc123',
+            'subjectable_id' => $seller->id,
+            'access_token' => 'tok_abc123',
         ]);
 
         $lazada = new Lazada(seller_short_code: 'TESTSHOP');
