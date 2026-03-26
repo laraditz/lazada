@@ -9,10 +9,13 @@ All notable changes to `laraditz/lazada` will be documented in this file
 - Multi-seller support: switch sellers per call using `seller_id` named argument on any service method.
 - `Lazada::make(seller_id: 'X')` for fresh isolated instances (required for queues and Octane).
 - `checkSeller()` resolves sellers by numeric Lazada ID or portal short code.
+- `SellerService::info()` — returns the resolved `LazadaSeller` model for the current context without making an API call.
+- Test infrastructure: PHPUnit configuration, model factories (`LazadaSeller`, `LazadaAccessToken`), and base `TestCase`.
 
 ### Changed
 
 - Config key `lazada.seller_id` renamed to `lazada.seller_short_code` to match Lazada portal naming.
+- `BaseService` no longer caches seller state internally; seller is resolved once via `checkSeller()` and read from `$lazada->seller`.
 
 ### Breaking Changes
 
