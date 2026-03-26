@@ -32,7 +32,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Laraditz\\Lazada\\Tests\\": "tests"
+      "Laraditz\\Lazada\\Tests\\": "tests",
+      "Laraditz\\Lazada\\Database\\Factories\\": "database/factories"
     }
   },
   "scripts": {

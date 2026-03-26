@@ -13,6 +13,11 @@ class LazadaSeller extends Model
 
     public $incrementing = false;
 
+    protected static function newFactory(): \Laraditz\Lazada\Database\Factories\LazadaSellerFactory
+    {
+        return \Laraditz\Lazada\Database\Factories\LazadaSellerFactory::new();
+    }
+
     protected $fillable = [
         'id', 'user_id', 'name', 'email', 'logo_url', 'company_name', 'short_code',
         'location', 'country_code', 'verified', 'status', 'cross_border'
