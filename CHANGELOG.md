@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.2 - 2026-03-26
+
+### Fixed
+
+- Add missing `$latestResponse` property to test classes (`LazadaTest`, `BaseServiceTest`, `SellerServiceTest`).
+
 ## 1.1.1 - 2026-03-26
 
 ### Added
