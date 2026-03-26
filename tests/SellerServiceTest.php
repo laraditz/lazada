@@ -8,6 +8,8 @@ use Laraditz\Lazada\Services\SellerService;
 
 class SellerServiceTest extends TestCase
 {
+    private static $latestResponse;
+
     public function test_info_returns_pre_resolved_seller(): void
     {
         $seller = LazadaSeller::factory()->create(['short_code' => 'TESTSHOP']);

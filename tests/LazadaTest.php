@@ -8,6 +8,8 @@ use LogicException;
 
 class LazadaTest extends TestCase
 {
+    private static $latestResponse;
+
     // --- checkSeller() resolution ---
 
     public function test_resolves_seller_by_numeric_id(): void
