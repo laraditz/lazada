@@ -70,7 +70,7 @@ class LazadaServiceProvider extends ServiceProvider
                 app_callback_url: config('lazada.app_callback_url'),
                 sign_method: config('lazada.sign_method'),
                 sandbox_mode: config('lazada.sandbox_mode'),
-                seller_id: config('lazada.seller_id'),
+                seller_short_code: config('lazada.seller_short_code'),
             );
         });
     }

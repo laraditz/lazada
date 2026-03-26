@@ -8,7 +8,7 @@ return [
     'app_key' => env('LAZADA_APP_KEY'),
     'app_secret' => env('LAZADA_APP_SECRET'),
     'app_callback_url' => env('LAZADA_APP_CALLBACK_URL'),
-    'seller_id' => env('LAZADA_SELLER_ID'),
+    'seller_short_code' => env('LAZADA_SELLER_SHORT_CODE'),
     'sign_method' => env('LAZADA_SIGN_METHOD', 'sha256'),
     'authorization_url' => 'https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=:callback_url&client_id=:app_key',
     'auth_url' => 'https://auth.lazada.com/rest',
