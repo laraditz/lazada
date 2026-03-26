@@ -37,12 +37,18 @@ return [
             'get' => '/order/get',
             'list' => '/orders/get',
             'items' => '/order/items/get',
+            'document' => '/order/document/get',
         ],
         'finance' => [
             'payout_status' => '/finance/payout/status/get',
             'account_transactions' => '/finance/transaction/accountTransactions/query',
             'logistics_fee_detail' => '/lbs/slb/queryLogisticsFeeDetail',
             'transaction_detail' => '/finance/transaction/details/get',
+        ],
+        'product' => [
+            'get' => '/products/get',
+            'item' => '/product/item/get',
+            'update_sellable_quantity' => 'POST /product/stock/sellable/update'
         ],
     ],
     'middleware' => ['api'],

@@ -21,6 +21,8 @@ class BaseService
 
     public string $sellerId;
 
+    public ?LazadaSeller $seller = null;
+
     public function __construct(
         public Lazada $lazada,
         private ?string $route = '',
@@ -99,13 +101,14 @@ class BaseService
             'action' => $this->serviceName . '::' . $this->methodName,
             'url' => $url,
             'request' => $payload,
+            'seller_id' => $this->seller?->id
         ]);
 
         $response = $response->$method($url, $payload);
 
         $response->throw(function (Response $response, RequestException $e) use ($request) {
             $request->update([
-                'error' =>  Str::limit(trim($e->getMessage()), 255),
+                'error' => Str::limit(trim($e->getMessage()), 255),
             ]);
         });
 
@@ -133,7 +136,7 @@ class BaseService
         }
 
         $request->update([
-            'error' =>  __('API Server Error'),
+            'error' => __('API Server Error'),
         ]);
 
         throw new LazadaAPIError(['code' => __('Error'), 'message' => __('API Server Error')]);
@@ -157,9 +160,9 @@ class BaseService
         ];
 
         if (!($this instanceof \Laraditz\Lazada\Services\AuthService)) {
-            $seller = LazadaSeller::where('short_code', $this->lazada->getSellerId())->firstOrFail();
+            $this->seller = LazadaSeller::where('short_code', $this->lazada->getSellerId())->firstOrFail();
 
-            $params['access_token'] = $seller->accessToken?->access_token;
+            $params['access_token'] = $this->seller?->accessToken?->access_token;
         }
 
         return $params;

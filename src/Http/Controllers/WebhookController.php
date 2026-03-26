@@ -65,8 +65,8 @@ class WebhookController extends Controller
             LazadaOrder::updateOrCreate([
                 'id' => $order_id
             ], [
-                'seller_id' =>  $seller_id,
-                'status' =>  $status,
+                'seller_id' => $seller_id,
+                'status' => $status,
             ]);
         }
 
@@ -90,8 +90,8 @@ class WebhookController extends Controller
                 'id' => $reverse_order_id
             ], [
                 'order_id' => $order_id,
-                'seller_id' =>  $seller_id,
-                'buyer_id' =>  $buyer_id,
+                'seller_id' => $seller_id,
+                'buyer_id' => $buyer_id,
                 'status' => $status,
             ]);
         }

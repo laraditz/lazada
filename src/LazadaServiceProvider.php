@@ -2,6 +2,7 @@
 
 namespace Laraditz\Lazada;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,13 +18,15 @@ class LazadaServiceProvider extends ServiceProvider
          */
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'lazada');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'lazada');
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        // $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->registerRoutes();
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/config.php' => config_path('lazada.php'),
             ], 'config');
+
+            $this->publishMigrations();
 
             // Publishing the views.
             /*$this->publishes([
@@ -87,5 +90,32 @@ class LazadaServiceProvider extends ServiceProvider
             'prefix' => config('lazada.routes.prefix'),
             'middleware' => config('lazada.middleware'),
         ];
+    }
+
+    protected function publishMigrations()
+    {
+        $databasePath = __DIR__ . '/../database/migrations/';
+        $migrationPath = database_path('migrations/');
+
+        $files = array_diff(scandir($databasePath), array('.', '..'));
+        $date = date('Y_m_d');
+        $time = date('His');
+
+        $migrationFiles = collect($files)
+            ->mapWithKeys(function (string $file) use ($databasePath, $migrationPath, $date, &$time) {
+                $filename = Str::replace(Str::substr($file, 0, 17), '', $file);
+
+                $found = glob($migrationPath . '*' . $filename);
+                $time = date("His", strtotime($time) + 1); // ensure in order
+    
+                return !!count($found) === true ? []
+                    : [
+                        $databasePath . $file => $migrationPath . $date . '_' . $time . $filename,
+                    ];
+            });
+
+        if ($migrationFiles->isNotEmpty()) {
+            $this->publishes($migrationFiles->toArray(), 'migrations');
+        }
     }
 }
