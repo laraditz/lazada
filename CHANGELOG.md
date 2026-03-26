@@ -2,6 +2,23 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.1 - 2026-03-26
+
+### Added
+
+- Multi-seller support: switch sellers per call using `seller_id` named argument on any service method.
+- `Lazada::make(seller_id: 'X')` for fresh isolated instances (required for queues and Octane).
+- `checkSeller()` resolves sellers by numeric Lazada ID or portal short code.
+
+### Changed
+
+- Config key `lazada.seller_id` renamed to `lazada.seller_short_code` to match Lazada portal naming.
+
+### Breaking Changes
+
+- Rename `LAZADA_SELLER_ID` → `LAZADA_SELLER_SHORT_CODE` in your `.env`.
+- Rename `seller_id` → `seller_short_code` in your published `config/lazada.php`.
+
 ## 1.1.0 - 2026-03-26
 
 ### Added
