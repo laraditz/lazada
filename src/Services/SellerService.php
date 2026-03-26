@@ -35,9 +35,7 @@ class SellerService extends BaseService
 
     public function info()
     {
-        $seller = LazadaSeller::where('short_code', $this->lazada->getSellerId())->firstOrFail();
-
-        return $seller;
+        return $this->lazada->seller;
     }
 
     private function getSellerStatus(?string $status): ActiveStatus
