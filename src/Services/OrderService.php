@@ -19,9 +19,10 @@ class OrderService extends BaseService
 
                 if ($order_id) {
                     LazadaOrder::updateOrCreate([
-                        'id' => $order_id
+                        'id' => $order_id,
                     ], [
-                        'statuses' =>  data_get($order, 'statuses'),
+                        'seller_id' => $request->seller_id,
+                        'statuses' => data_get($order, 'statuses'),
                     ]);
                 }
             }
@@ -35,9 +36,10 @@ class OrderService extends BaseService
 
         if ($order_id) {
             LazadaOrder::updateOrCreate([
-                'id' => $order_id
+                'id' => $order_id,
             ], [
-                'statuses' =>  data_get($data, 'statuses'),
+                'seller_id' => $request->seller_id,
+                'statuses' => data_get($data, 'statuses'),
             ]);
         }
     }
