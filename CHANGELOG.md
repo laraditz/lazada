@@ -2,6 +2,20 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.4 - 2026-04-22
+
+### Added
+
+- Add `home_url` config key (`LAZADA_HOME_URL`) for customising the back-button destination on the seller authorisation page; falls back to `app.url` when not set.
+
+### Changed
+
+- Redesign seller authorisation page (`authorized.blade.php`) with Lazada brand colours (orange, pink, blue), animated SVG success ring, copy-to-clipboard token buttons, and a back-to-home button.
+
+### Fixed
+
+- Fix `SellerController` using bare `Lazada` alias instead of the fully-qualified facade `Laraditz\Lazada\Facades\Lazada`.
+
 ## 1.1.3 - 2026-03-26
 
 ### Fixed
