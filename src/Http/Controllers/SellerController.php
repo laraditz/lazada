@@ -4,7 +4,7 @@ namespace Laraditz\Lazada\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Laraditz\Lazada\Exceptions\LazadaException;
-use Lazada;
+use Laraditz\Lazada\Facades\Lazada;
 
 class SellerController extends Controller
 {
