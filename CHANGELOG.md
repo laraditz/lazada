@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.5 - 2026-04-24
+
+### Changed
+
+- Change migration file `2026_02_26_060930_add_seller_id_to_lazada_messages_table` `seller_id` column from `varchar` to `bigInteger`.
+
 ## 1.1.4 - 2026-04-22
 
 ### Added
