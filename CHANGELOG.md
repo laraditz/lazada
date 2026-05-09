@@ -2,6 +2,12 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.6 - 2026-05-09
+
+### Changed
+
+- Refactor Lazada `make()` function.
+
 ## 1.1.5 - 2026-04-24
 
 ### Changed

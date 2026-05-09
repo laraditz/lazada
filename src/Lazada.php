@@ -27,26 +27,17 @@ class Lazada
         $this->setAppSecret($this->app_secret ?? config('lazada.app_secret'));
         $this->setSellerShortCode($this->seller_short_code ?? config('lazada.seller_short_code'));
         $this->setAppCallbackUrl($this->app_callback_url ?? config('lazada.app_callback_url') ?? route('lazada.seller.authorized'));
+        $this->setRegion($this->region ?? config('lazada.region'));
     }
 
-    public static function make(
-        ?string $seller_id = null,
-        ?string $region = null,
-        ?string $app_key = null,
-        ?string $app_secret = null,
-        ?string $app_callback_url = null,
-        ?string $sign_method = null,
-        ?bool $sandbox_mode = null,
-    ): static {
-        return new static(
-            region: $region,
-            app_key: $app_key,
-            app_secret: $app_secret,
-            app_callback_url: $app_callback_url,
-            sign_method: $sign_method,
-            sandbox_mode: $sandbox_mode,
-            seller_short_code: $seller_id,
-        );
+    public static function make(...$args): static
+    {
+        if (isset($args['seller_id'])) {
+            $args['seller_short_code'] = $args['seller_id'];
+            unset($args['seller_id']);
+        }
+
+        return new static(...$args);
     }
 
     public function checkSeller(): void
