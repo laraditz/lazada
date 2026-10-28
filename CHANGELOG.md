@@ -2,6 +2,17 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.1.7 - 2026-10-28
+
+### Fixed
+
+- Fix seller authorization failing because `authorizationUrl()` url-encoded the `redirect_uri`, which Lazada now rejects. The callback URL is now passed as-is.
+
+### Added
+
+- Add `AuthServiceTest` covering the generated authorization URL.
+- Document in README that the callback URL must not contain a query string.
+
 ## 1.1.6 - 2026-05-09
 
 ### Changed

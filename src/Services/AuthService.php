@@ -21,7 +21,8 @@ class AuthService extends BaseService
 
         $authorization_url = Str::swap([
             ':app_key' => urlencode($app_key),
-            ':callback_url' => urlencode($app_callback_url),
+            // Lazada rejects an url-encoded redirect_uri
+            ':callback_url' => $app_callback_url,
         ], $authorization_url);
 
         return $authorization_url;

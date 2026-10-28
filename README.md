@@ -88,6 +88,8 @@ $url = Lazada::auth()->authorizationUrl();
 4. The package automatically handles the token exchange and storage
 5. The seller is now ready for API calls
 
+> **Note:** Lazada rejects a url-encoded `redirect_uri`, so `authorizationUrl()` passes the callback URL as-is. Because of this, the callback URL (`LAZADA_APP_CALLBACK_URL` or the default `/lazada/seller/authorized` route) must not contain a query string. For example, `https://your-app-url.com/callback?foo=1&bar=2` would break the authorization URL, because `&bar=2` gets read as a separate parameter of the Lazada URL. Use a plain path instead, and make sure it exactly matches the App Callback URL configured in the Lazada Open Platform console.
+
 ## Available Methods
 
 Here's the full list of methods available in this package. Parameters follow the [Lazada Open Platform Documentation](https://open.lazada.com/apps/doc/api) exactly. Common parameters like `app_key`, `sign`, `timestamp`, and `access_token` are added automatically.
