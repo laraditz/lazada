@@ -4,6 +4,8 @@ namespace Laraditz\Lazada\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Laraditz\Lazada\Exceptions\LazadaTokenException;
+use Laraditz\Lazada\Lazada;
 use Laraditz\Lazada\Models\LazadaAccessToken;
 use Laraditz\Lazada\Models\LazadaMessage;
 use Laraditz\Lazada\Models\LazadaSeller;
@@ -74,7 +76,13 @@ class AuthService extends BaseService
         if ($seller && $seller->name === null) {
 
             try {
-                \Lazada::seller()->get();
+                Lazada::make(
+                    region: $this->lazada->getRegion(),
+                    app_key: $this->lazada->getAppKey(),
+                    app_secret: $this->lazada->getAppSecret(),
+                    app_callback_url: $this->lazada->getAppCallbackUrl(),
+                    seller_id: (string) $seller->id,
+                )->seller()->get();
             } catch (\Throwable $th) {
                 // throw $th;
             }
