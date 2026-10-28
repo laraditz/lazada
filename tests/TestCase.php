@@ -25,6 +25,9 @@ class TestCase extends OrchestraTestCase
             'prefix'   => '',
         ]);
 
+        $app['config']->set('app.key', 'base64:' . base64_encode(str_repeat('a', 32)));
+        $app['config']->set('app.cipher', 'AES-256-CBC');
+
         // Package config defaults for tests
         $app['config']->set('lazada.app_key', 'test_app_key');
         $app['config']->set('lazada.app_secret', 'test_app_secret');

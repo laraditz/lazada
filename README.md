@@ -426,6 +426,25 @@ Compares the push `Authorization` header (case-insensitive, trimmed) with the ex
 
 `Laraditz\Lazada\Events\SellerAuthorized` carries the public readonly `LazadaSeller $seller` and `LazadaAccessToken $accessToken`. It is dispatched after an access token exchange has stored the seller and token, before the seller-info fetch. Listening to it is optional.
 
+### Token encryption
+
+```php
+// config/lazada.php
+'encrypt_tokens' => env('LAZADA_ENCRYPT_TOKENS', false),
+```
+
+Default `false`: tokens are stored as plaintext, exactly as before. When `true`, `access_token` and `refresh_token` are encrypted with Laravel's `Crypt` (so `APP_KEY` must stay stable) when written through the `LazadaAccessToken` model. Reads work for plaintext rows, encrypted rows, and after the flag is switched off again. A published config file without this key behaves as `false`.
+
+To encrypt rows that already exist, enable the flag and run:
+
+```bash
+php artisan lazada:encrypt-tokens
+```
+
+It prints `Encrypted N value(s).` and is safe to run again (the second run reports 0). With the flag off it prints `Enable lazada.encrypt_tokens first.` and exits with code 1. Always write tokens through the Eloquent model; query-builder updates skip the cast.
+
+Encrypted values are longer than the original token, so a new migration (`change_tokens_to_text_in_lazada_access_tokens_table`) widens `access_token` and `refresh_token` from `varchar(255)` to `text`. Publish and run it before enabling encryption (`php artisan vendor:publish --tag=migrations`; already-published migrations are skipped by name).
+
 ## Credits
 
 - [Raditz Farhan](https://github.com/laraditz) - Creator and maintainer
