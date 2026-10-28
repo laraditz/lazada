@@ -445,6 +445,30 @@ It prints `Encrypted N value(s).` and is safe to run again (the second run repor
 
 Encrypted values are longer than the original token, so a new migration (`change_tokens_to_text_in_lazada_access_tokens_table`) widens `access_token` and `refresh_token` from `varchar(255)` to `text`. Publish and run it before enabling encryption (`php artisan vendor:publish --tag=migrations`; already-published migrations are skipped by name).
 
+### Request log controls
+
+Every API call is logged to `lazada_messages`. These options are all opt-in; the defaults keep today's behaviour. They are separate from `log_message`, which controls webhook logging.
+
+```php
+'logging' => [
+    'requests' => env('LAZADA_LOG_REQUESTS', true),
+    'redact_secrets' => env('LAZADA_LOG_REDACT_SECRETS', false),
+    'prune_after_days' => env('LAZADA_LOG_PRUNE_AFTER_DAYS'),
+],
+```
+
+- `requests` (default `true`): set to `false` to stop writing `lazada_messages` rows. API calls and after-hooks (for example storing the token after `auth()->accessToken()`) work as before; only the log row is skipped.
+- `redact_secrets` (default `false`): when `true`, the saved log replaces `access_token`, `refresh_token`, `code` and `sign` with `[REDACTED]` in the request (at any depth) and the URL query string, and `access_token` and `refresh_token` in the response. The HTTP call and the response returned to you are unchanged, and `lazada_access_tokens` still stores the real values.
+- `prune_after_days` (default `null`): a positive integer lets `LazadaMessage` rows older than that many days be pruned. Empty or `0` prunes nothing.
+
+Laravel's `model:prune` only discovers models under `app/Models`, so package models are pruned only if your app schedules it explicitly, for example:
+
+```php
+Schedule::command('model:prune', ['--model' => [\Laraditz\Lazada\Models\LazadaMessage::class]])->daily();
+```
+
+A published config file without the `logging` key behaves as the defaults above.
+
 ## Credits
 
 - [Raditz Farhan](https://github.com/laraditz) - Creator and maintainer

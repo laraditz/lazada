@@ -58,7 +58,7 @@ class AuthService extends BaseService
                 'refresh_token' => data_get($result, 'refresh_token'),
                 'expires_at' => now()->addSeconds(data_get($result, 'expires_in')),
                 'refresh_expires_at' => now()->addSeconds(data_get($result, 'refresh_expires_in')),
-                'code' => data_get($request, 'request.code'),
+                'code' => data_get($this->getPayload(), 'code'),
             ];
 
             if ($seller->accessToken) {
