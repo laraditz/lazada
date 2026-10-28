@@ -445,6 +445,9 @@ It prints `Encrypted N value(s).` and is safe to run again (the second run repor
 
 Encrypted values are longer than the original token, so a new migration (`change_tokens_to_text_in_lazada_access_tokens_table`) widens `access_token` and `refresh_token` from `varchar(255)` to `text`. Publish and run it before enabling encryption (`php artisan vendor:publish --tag=migrations`; already-published migrations are skipped by name).
 
+- The `2026_10_29` migration uses `->change()`, which needs `doctrine/dbal` on Laravel 10. Rolling it back narrows the columns to 255 characters and fails or truncates if encrypted values exist.
+- If you rotate `APP_KEY`, keep the old key in `APP_PREVIOUS_KEYS` so existing encrypted values still decrypt, and do not run `lazada:encrypt-tokens` until then: it treats any value it cannot decrypt with the current key as plaintext and would encrypt it a second time.
+
 ### Request log controls
 
 Every API call is logged to `lazada_messages`. These options are all opt-in; the defaults keep today's behaviour. They are separate from `log_message`, which controls webhook logging.

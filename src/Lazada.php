@@ -140,7 +140,7 @@ class Lazada
     {
         $authorization = strtoupper(trim($authorization));
 
-        if ($rawBody === '' || $authorization === '') {
+        if ($rawBody === '' || $authorization === '' || (string) $this->getAppSecret() === '') {
             return false;
         }
 

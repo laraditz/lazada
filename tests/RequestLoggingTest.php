@@ -130,4 +130,15 @@ class RequestLoggingTest extends TestCase
         $this->assertSame(1, (new LazadaMessage)->pruneAll());
         $this->assertSame(1, LazadaMessage::count());
     }
+
+    #[Test]
+    public function test_redact_array_returns_non_array_input_unchanged()
+    {
+        $service = (new Lazada())->auth();
+        $method = new \ReflectionMethod($service, 'redactArray');
+
+        foreach (['ok', 5, true, null] as $value) {
+            $this->assertSame($value, $method->invoke($service, $value, ['access_token']));
+        }
+    }
 }

@@ -84,4 +84,13 @@ class OrtiroHooksTest extends TestCase
                 && $e->accessToken->access_token === 'token-777';
         });
     }
+
+    public function test_push_signature_rejects_empty_app_secret(): void
+    {
+        config()->set('lazada.app_secret', '');
+        $body = '{"message_type":1}';
+        $sig = strtoupper(hash_hmac('sha256', 'test_app_key' . $body, ''));
+
+        $this->assertFalse((new Lazada())->verifyPushSignature($body, $sig));
+    }
 }
