@@ -72,4 +72,19 @@ class AuthServiceTest extends TestCase
 
         (new Lazada())->auth()->accessToken(code: 'abc');
     }
+
+    public function test_access_token_hook_keeps_callers_sign_method(): void
+    {
+        Http::fake([
+            'https://auth.lazada.com/rest/*' => Http::response($this->tokenResponse(555)),
+            '*/seller/get*' => Http::response(['code' => '0', 'request_id' => 'req-2', 'data' => ['name' => 'New Shop']]),
+        ]);
+
+        (new Lazada(sign_method: 'sha1'))->auth()->accessToken(code: 'abc');
+
+        Http::assertSent(function ($request) {
+            return str_contains($request->url(), '/seller/get')
+                && $request['sign_method'] === 'sha1';
+        });
+    }
 }

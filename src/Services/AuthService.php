@@ -81,6 +81,8 @@ class AuthService extends BaseService
                     app_key: $this->lazada->getAppKey(),
                     app_secret: $this->lazada->getAppSecret(),
                     app_callback_url: $this->lazada->getAppCallbackUrl(),
+                    sign_method: $this->lazada->getSignMethod(),
+                    sandbox_mode: $this->lazada->getSandboxMode(),
                     seller_id: (string) $seller->id,
                 )->seller()->get();
             } catch (\Throwable $th) {
