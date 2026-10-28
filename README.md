@@ -402,6 +402,30 @@ If you discover any security vulnerabilities, please email [raditzfarhan@gmail.c
 - 📖 [Lazada Open Platform Documentation](https://open.lazada.com/apps/doc/api)
 - 🐛 [Issue Tracker](https://github.com/laraditz/lazada/issues)
 
+## Multi-tenant / hardening options (opt-in)
+
+### Authorization URL overrides
+
+```php
+Lazada::make()->auth()->authorizationUrl(?string $redirectUri = null, ?string $state = null): string
+```
+
+`$redirectUri` replaces the configured callback URL for this call (it is not url-encoded, as Lazada rejects an encoded `redirect_uri`). A non-null `$state` is appended as `&state=` followed by the url-encoded value. With no arguments the URL is unchanged.
+
+> Lazada's support for `state` is to be confirmed by Ortiro's sandbox test (Plan 4).
+
+### Push signature check
+
+```php
+Lazada::verifyPushSignature(string $rawBody, string $authorization): bool
+```
+
+Compares the push `Authorization` header (case-insensitive, trimmed) with the expected signature of the raw body, using a timing-safe comparison. Returns `false` for empty input.
+
+### SellerAuthorized event
+
+`Laraditz\Lazada\Events\SellerAuthorized` carries the public readonly `LazadaSeller $seller` and `LazadaAccessToken $accessToken`. It is dispatched after an access token exchange has stored the seller and token, before the seller-info fetch. Listening to it is optional.
+
 ## Credits
 
 - [Raditz Farhan](https://github.com/laraditz) - Creator and maintainer
