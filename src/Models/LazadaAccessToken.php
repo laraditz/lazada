@@ -4,6 +4,7 @@ namespace Laraditz\Lazada\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laraditz\Lazada\Casts\EncryptedToken;
 
 class LazadaAccessToken extends Model
 {
@@ -20,6 +21,8 @@ class LazadaAccessToken extends Model
     ];
 
     protected $casts = [
+        'access_token' => EncryptedToken::class,
+        'refresh_token' => EncryptedToken::class,
         'user_info' => 'json',
         'expires_at' => 'datetime',
         'refresh_expires_at' => 'datetime',

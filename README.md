@@ -402,6 +402,76 @@ If you discover any security vulnerabilities, please email [raditzfarhan@gmail.c
 - 📖 [Lazada Open Platform Documentation](https://open.lazada.com/apps/doc/api)
 - 🐛 [Issue Tracker](https://github.com/laraditz/lazada/issues)
 
+## Multi-tenant / hardening options (opt-in)
+
+### Authorization URL overrides
+
+```php
+Lazada::make()->auth()->authorizationUrl(?string $redirectUri = null, ?string $state = null): string
+```
+
+`$redirectUri` replaces the configured callback URL for this call (it is not url-encoded, as Lazada rejects an encoded `redirect_uri`). A non-null `$state` is appended as `&state=` followed by the url-encoded value. With no arguments the URL is unchanged.
+
+> Lazada's support for `state` is to be confirmed by Ortiro's sandbox test (Plan 4).
+
+### Push signature check
+
+```php
+Lazada::verifyPushSignature(string $rawBody, string $authorization): bool
+```
+
+Compares the push `Authorization` header (case-insensitive, trimmed) with the expected signature of the raw body, using a timing-safe comparison. Returns `false` for empty input.
+
+### SellerAuthorized event
+
+`Laraditz\Lazada\Events\SellerAuthorized` carries the public readonly `LazadaSeller $seller` and `LazadaAccessToken $accessToken`. It is dispatched after an access token exchange has stored the seller and token, before the seller-info fetch. Listening to it is optional.
+
+### Token encryption
+
+```php
+// config/lazada.php
+'encrypt_tokens' => env('LAZADA_ENCRYPT_TOKENS', false),
+```
+
+Default `false`: tokens are stored as plaintext, exactly as before. When `true`, `access_token` and `refresh_token` are encrypted with Laravel's `Crypt` (so `APP_KEY` must stay stable) when written through the `LazadaAccessToken` model. Reads work for plaintext rows, encrypted rows, and after the flag is switched off again. A published config file without this key behaves as `false`.
+
+To encrypt rows that already exist, enable the flag and run:
+
+```bash
+php artisan lazada:encrypt-tokens
+```
+
+It prints `Encrypted N value(s).` and is safe to run again (the second run reports 0). With the flag off it prints `Enable lazada.encrypt_tokens first.` and exits with code 1. Always write tokens through the Eloquent model; query-builder updates skip the cast.
+
+Encrypted values are longer than the original token, so a new migration (`change_tokens_to_text_in_lazada_access_tokens_table`) widens `access_token` and `refresh_token` from `varchar(255)` to `text`. Publish and run it before enabling encryption (`php artisan vendor:publish --tag=migrations`; already-published migrations are skipped by name).
+
+- The `2026_10_29` migration uses `->change()`, which needs `doctrine/dbal` on Laravel 10. Rolling it back narrows the columns to 255 characters and fails or truncates if encrypted values exist.
+- If you rotate `APP_KEY`, keep the old key in `APP_PREVIOUS_KEYS` so existing encrypted values still decrypt, and do not run `lazada:encrypt-tokens` until then: it treats any value it cannot decrypt with the current key as plaintext and would encrypt it a second time.
+
+### Request log controls
+
+Every API call is logged to `lazada_messages`. These options are all opt-in; the defaults keep today's behaviour. They are separate from `log_message`, which controls webhook logging.
+
+```php
+'logging' => [
+    'requests' => env('LAZADA_LOG_REQUESTS', true),
+    'redact_secrets' => env('LAZADA_LOG_REDACT_SECRETS', false),
+    'prune_after_days' => env('LAZADA_LOG_PRUNE_AFTER_DAYS'),
+],
+```
+
+- `requests` (default `true`): set to `false` to stop writing `lazada_messages` rows. API calls and after-hooks (for example storing the token after `auth()->accessToken()`) work as before; only the log row is skipped.
+- `redact_secrets` (default `false`): when `true`, the saved log replaces `access_token`, `refresh_token`, `code` and `sign` with `[REDACTED]` in the request (at any depth) and the URL query string, and `access_token` and `refresh_token` in the response. The HTTP call and the response returned to you are unchanged, and `lazada_access_tokens` still stores the real values.
+- `prune_after_days` (default `null`): a positive integer lets `LazadaMessage` rows older than that many days be pruned. Empty or `0` prunes nothing.
+
+Laravel's `model:prune` only discovers models under `app/Models`, so package models are pruned only if your app schedules it explicitly, for example:
+
+```php
+Schedule::command('model:prune', ['--model' => [\Laraditz\Lazada\Models\LazadaMessage::class]])->daily();
+```
+
+A published config file without the `logging` key behaves as the defaults above.
+
 ## Credits
 
 - [Raditz Farhan](https://github.com/laraditz) - Creator and maintainer

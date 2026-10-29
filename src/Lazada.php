@@ -136,6 +136,17 @@ class Lazada
         return strtoupper($signature);
     }
 
+    public function verifyPushSignature(string $rawBody, string $authorization): bool
+    {
+        $authorization = strtoupper(trim($authorization));
+
+        if ($rawBody === '' || $authorization === '' || (string) $this->getAppSecret() === '') {
+            return false;
+        }
+
+        return hash_equals($this->getWebPushSignature($rawBody), $authorization);
+    }
+
     public function getRegion(): ?string
     {
         return $this->region;

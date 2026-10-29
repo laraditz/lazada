@@ -4,6 +4,9 @@ namespace Laraditz\Lazada\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Laraditz\Lazada\Events\SellerAuthorized;
+use Laraditz\Lazada\Exceptions\LazadaTokenException;
+use Laraditz\Lazada\Lazada;
 use Laraditz\Lazada\Models\LazadaAccessToken;
 use Laraditz\Lazada\Models\LazadaMessage;
 use Laraditz\Lazada\Models\LazadaSeller;
@@ -13,10 +16,10 @@ class AuthService extends BaseService
     /**
      * Return authorization URL to get the code to generate access token
      */
-    public function authorizationUrl(): string
+    public function authorizationUrl(?string $redirectUri = null, ?string $state = null): string
     {
         $app_key = $this->lazada->getAppKey();
-        $app_callback_url = $this->lazada->getAppCallbackUrl();
+        $app_callback_url = $redirectUri ?? $this->lazada->getAppCallbackUrl();
         $authorization_url = config('lazada.authorization_url');
 
         $authorization_url = Str::swap([
@@ -24,6 +27,10 @@ class AuthService extends BaseService
             // Lazada rejects an url-encoded redirect_uri
             ':callback_url' => $app_callback_url,
         ], $authorization_url);
+
+        if ($state !== null) {
+            $authorization_url .= '&state=' . urlencode($state);
+        }
 
         return $authorization_url;
     }
@@ -51,7 +58,7 @@ class AuthService extends BaseService
                 'refresh_token' => data_get($result, 'refresh_token'),
                 'expires_at' => now()->addSeconds(data_get($result, 'expires_in')),
                 'refresh_expires_at' => now()->addSeconds(data_get($result, 'refresh_expires_in')),
-                'code' => data_get($request, 'request.code'),
+                'code' => data_get($this->getPayload(), 'code'),
             ];
 
             if ($seller->accessToken) {
@@ -70,11 +77,27 @@ class AuthService extends BaseService
             return $seller;
         });
 
+        if ($seller) {
+            $seller->load('accessToken');
+
+            if ($seller->accessToken) {
+                SellerAuthorized::dispatch($seller, $seller->accessToken);
+            }
+        }
+
         // one time update seller info, its ok if failed
         if ($seller && $seller->name === null) {
 
             try {
-                \Lazada::seller()->get();
+                Lazada::make(
+                    region: $this->lazada->getRegion(),
+                    app_key: $this->lazada->getAppKey(),
+                    app_secret: $this->lazada->getAppSecret(),
+                    app_callback_url: $this->lazada->getAppCallbackUrl(),
+                    sign_method: $this->lazada->getSignMethod(),
+                    sandbox_mode: $this->lazada->getSandboxMode(),
+                    seller_id: (string) $seller->id,
+                )->seller()->get();
             } catch (\Throwable $th) {
                 // throw $th;
             }
