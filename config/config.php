@@ -22,6 +22,12 @@ return [
         'ID' => 'https://api.lazada.co.id/rest',
     ],
     'sandbox_mode' => env('LAZADA_SANDBOX_MODE', false),
+    'encrypt_tokens' => env('LAZADA_ENCRYPT_TOKENS', false),
+    'logging' => [
+        'requests' => env('LAZADA_LOG_REQUESTS', true),
+        'redact_secrets' => env('LAZADA_LOG_REDACT_SECRETS', false),
+        'prune_after_days' => env('LAZADA_LOG_PRUNE_AFTER_DAYS'),
+    ],
     'log_message' => env('LAZADA_LOG_MESSAGE', false),
     'routes' => [
         'prefix' => 'lazada',
