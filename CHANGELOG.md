@@ -2,6 +2,22 @@
 
 All notable changes to `laraditz/lazada` will be documented in this file
 
+## 1.2.0 - 2026-10-29
+
+### Added
+
+- Support Laravel 13.
+- `AuthService::authorizationUrl(?string $redirectUri = null, ?string $state = null)` accepts an optional redirect URI and `state`.
+- `Lazada::verifyPushSignature(string $rawBody, string $authorization): bool` to verify push (webhook) signatures.
+- `SellerAuthorized` event, fired after a seller's access token is obtained.
+- Opt-in token encryption: `LAZADA_ENCRYPT_TOKENS` (default `false`) and the `lazada:encrypt-tokens` command. Publish and run the new migration that widens the token columns to `text` before enabling it.
+- Opt-in request log controls: `LAZADA_LOG_REQUESTS` (default `true`), `LAZADA_LOG_REDACT_SECRETS` (default `false`) and `LAZADA_LOG_PRUNE_AFTER_DAYS` for pruning `LazadaMessage` with `model:prune`.
+
+### Fixed
+
+- After an access token or refresh token request, the seller lookup now uses the same Lazada instance (seller, sign method and sandbox mode) instead of the default one.
+- Import `LazadaTokenException` in `AuthService`, so a missing seller id throws the intended exception.
+
 ## 1.1.7 - 2026-10-28
 
 ### Fixed
